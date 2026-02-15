@@ -1,0 +1,71 @@
+{
+  "id": "checkout-shipping",
+  "title": "Checkout Shipping",
+  "description": "Provide your shipping details to complete your purchase.",
+  "successMessage": "Shipping details saved. You are ready for payment.",
+  "fields": [
+    {
+      "id": "fullName",
+      "type": "text",
+      "label": "Full Name",
+      "validation": {
+        "required": true,
+        "minLength": 2,
+        "message": "Please enter the recipient name (at least 2 characters)."
+      }
+    },
+    {
+      "id": "addressLine1",
+      "type": "text",
+      "label": "Address Line 1",
+      "validation": {
+        "required": true,
+        "minLength": 5,
+        "message": "Address line 1 is required and should be at least 5 characters."
+      }
+    },
+    {
+      "id": "city",
+      "type": "text",
+      "label": "City",
+      "validation": {
+        "required": true,
+        "message": "Please enter your city."
+      }
+    },
+    {
+      "id": "postalCode",
+      "type": "text",
+      "label": "Postal Code",
+      "placeholder": "12345",
+      "validation": {
+        "required": true,
+        "pattern": "^[A-Za-z0-9 -]{4,10}$",
+        "message": "Please enter a valid postal code."
+      }
+    },
+    {
+      "id": "shippingMethod",
+      "type": "radio",
+      "label": "Shipping Method",
+      "options": [
+        { "label": "Standard (3-5 days)", "value": "standard" },
+        { "label": "Express (1-2 days)", "value": "express" }
+      ],
+      "validation": {
+        "required": true,
+        "message": "Please choose a shipping method."
+      }
+    },
+    {
+      "id": "deliveryInstructions",
+      "type": "textarea",
+      "label": "Delivery Instructions",
+      "placeholder": "Optional notes for courier",
+      "validation": {
+        "maxLength": 250,
+        "message": "Delivery instructions must be 250 characters or fewer."
+      }
+    }
+  ]
+}

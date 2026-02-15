@@ -26,7 +26,7 @@ export const FormFieldWrapper: React.FC<FormFieldWrapperProps> = ({
             <label
                 htmlFor={id}
                 id={`${id}-label`}
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                className="text-sm font-semibold leading-none text-gray-900 peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
             >
                 {label}
                 {required && <span className="text-red-500 ml-1">*</span>}
@@ -35,7 +35,7 @@ export const FormFieldWrapper: React.FC<FormFieldWrapperProps> = ({
             {children}
 
             {description && !error && (
-                <p className="text-sm text-gray-500 text-muted-foreground">{description}</p>
+                <p className="text-sm text-gray-600">{description}</p>
             )}
 
             {error && (

@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { useForm, FieldValues } from 'react-hook-form';
+import { useForm, FieldValues, FieldErrors } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { FormSchema } from '@/lib/schema-types';
 import { generateZodSchema } from '@/lib/zod-schema-generator';
@@ -9,11 +9,12 @@ import { cn } from '@/lib/utils';
 interface DynamicFormProps {
     schema: FormSchema;
     onSubmit: (data: FieldValues) => void;
+    onInvalid?: (errors: FieldErrors<FieldValues>) => void;
     className?: string;
     defaultValues?: FieldValues;
 }
 
-export const DynamicForm: React.FC<DynamicFormProps> = ({ schema, onSubmit, className, defaultValues }) => {
+export const DynamicForm: React.FC<DynamicFormProps> = ({ schema, onSubmit, onInvalid, className, defaultValues }) => {
     const zodSchema = useMemo(() => generateZodSchema(schema.fields), [schema.fields]);
 
     const form = useForm({
@@ -26,11 +27,11 @@ export const DynamicForm: React.FC<DynamicFormProps> = ({ schema, onSubmit, clas
     const { handleSubmit, formState: { isSubmitting } } = form;
 
     return (
-        <div className={cn("w-full max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md", className)}>
+        <div className={cn("w-full max-w-2xl mx-auto p-4 sm:p-6 bg-white text-gray-900 rounded-lg shadow-md", className)}>
             <h2 className="text-2xl font-bold mb-2 text-gray-900">{schema.title}</h2>
-            {schema.description && <p className="text-gray-600 mb-6">{schema.description}</p>}
+            {schema.description && <p className="text-gray-700 mb-6">{schema.description}</p>}
 
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            <form onSubmit={handleSubmit(onSubmit, onInvalid)} className="space-y-6" noValidate>
                 {schema.fields.map((field) => (
                     <FieldFactory key={field.id} field={field} form={form} />
                 ))}

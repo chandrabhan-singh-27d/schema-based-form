@@ -1,0 +1,73 @@
+{
+  "id": "contact-us",
+  "title": "Contact Us",
+  "description": "Send us a message and we will get back to you as soon as possible.",
+  "successMessage": "Thanks for reaching out. Our support team will reply shortly.",
+  "fields": [
+    {
+      "id": "name",
+      "type": "text",
+      "label": "Your Name",
+      "placeholder": "Jane Doe",
+      "validation": {
+        "required": true,
+        "minLength": 2,
+        "message": "Please enter your name (at least 2 characters)."
+      }
+    },
+    {
+      "id": "email",
+      "type": "email",
+      "label": "Email Address",
+      "placeholder": "jane@example.com",
+      "validation": {
+        "required": true,
+        "message": "Please provide a valid email address."
+      }
+    },
+    {
+      "id": "topic",
+      "type": "select",
+      "label": "Topic",
+      "options": [
+        { "label": "Order Support", "value": "order" },
+        { "label": "Account Issue", "value": "account" },
+        { "label": "General Question", "value": "general" }
+      ],
+      "validation": {
+        "required": true,
+        "message": "Please choose a topic."
+      }
+    },
+    {
+      "id": "orderId",
+      "type": "text",
+      "label": "Order ID",
+      "placeholder": "ORD-12345",
+      "conditions": [
+        {
+          "field": "topic",
+          "operator": "eq",
+          "value": "order"
+        }
+      ],
+      "validation": {
+        "required": true,
+        "minLength": 5,
+        "message": "Order ID is required and should be at least 5 characters."
+      }
+    },
+    {
+      "id": "message",
+      "type": "textarea",
+      "label": "Message",
+      "placeholder": "Write your message here...",
+      "validation": {
+        "required": true,
+        "minLength": 10,
+        "maxLength": 500,
+        "message": "Message must be between 10 and 500 characters."
+      }
+    }
+  ]
+}

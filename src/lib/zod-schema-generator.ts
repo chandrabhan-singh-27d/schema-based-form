@@ -2,24 +2,19 @@ import { z } from 'zod';
 import { FieldSchema, ConditionalRule } from './schema-types';
 
 const STRING_FIELD_TYPES = new Set(['text', 'email', 'password', 'textarea']);
+const DEFAULT_REQUIRED_MESSAGE = 'Please fill out this field.';
 
 const buildOptionsSchema = (field: FieldSchema): z.ZodTypeAny => {
     const optionValues = field.options?.map((option) => option.value) ?? [];
 
     if (optionValues.length === 0) {
-        return z.string();
+        return z.unknown();
     }
 
-    if (optionValues.length === 1) {
-        return z.literal(optionValues[0]);
-    }
-
-    const [first, second, ...rest] = optionValues;
-    return z.union([
-        z.literal(first),
-        z.literal(second),
-        ...rest.map((value) => z.literal(value)),
-    ]);
+    return z.custom<string | number | undefined>(
+        (value) => value === undefined || optionValues.some((optionValue) => optionValue === value),
+        { message: field.validation?.message || 'Please choose one of the available options.' }
+    );
 };
 
 /**
@@ -28,27 +23,27 @@ const buildOptionsSchema = (field: FieldSchema): z.ZodTypeAny => {
  * @returns A Zod schema for the field.
  */
 const generateFieldSchema = (field: FieldSchema) => {
+    const validation = field.validation;
+    const requiredMessage = validation?.message || DEFAULT_REQUIRED_MESSAGE;
     let schema: z.ZodTypeAny;
 
     switch (field.type) {
         case 'number':
-            schema = z.number({ message: 'Must be a number' });
+            schema = z.number({ message: validation?.message || 'Please enter a valid number.' });
             break;
         case 'checkbox':
             schema = z.boolean();
             break;
         case 'email':
-            schema = z.string().email({ message: 'Invalid email address' });
+            schema = z.string({ message: requiredMessage }).email({ message: validation?.message || 'Please enter a valid email address.' });
             break;
         case 'select':
         case 'radio':
             schema = buildOptionsSchema(field);
             break;
         default:
-            schema = z.string();
+            schema = z.string({ message: requiredMessage });
     }
-
-    const { validation } = field;
 
     if (!validation) {
         if (STRING_FIELD_TYPES.has(field.type)) {
@@ -57,8 +52,23 @@ const generateFieldSchema = (field: FieldSchema) => {
         return schema.optional();
     }
 
+    if (validation.required && field.type === 'checkbox') {
+        schema = z.literal(true, { message: validation.message || DEFAULT_REQUIRED_MESSAGE });
+    }
+
+    if (validation.required && field.type === 'number') {
+        schema = z.number({ message: validation.message || DEFAULT_REQUIRED_MESSAGE });
+    }
+
     if (validation.required && STRING_FIELD_TYPES.has(field.type)) {
-        schema = (schema as z.ZodString).min(1, { message: validation.message || 'Required' });
+        schema = (schema as z.ZodString).min(1, { message: validation.message || DEFAULT_REQUIRED_MESSAGE });
+    }
+
+    if (validation.required && (field.type === 'select' || field.type === 'radio')) {
+        schema = schema.refine(
+            (value) => value !== undefined && value !== null && value !== '',
+            { message: validation.message || DEFAULT_REQUIRED_MESSAGE }
+        );
     }
 
     if (validation.min !== undefined && field.type === 'number') {

@@ -49,5 +49,6 @@ export interface FormSchema {
     id: string;
     title: string;
     description?: string;
+    successMessage?: string;
     fields: FieldSchema[];
 }

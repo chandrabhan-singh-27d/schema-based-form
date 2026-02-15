@@ -104,4 +104,53 @@ describe('generateZodSchema', () => {
         expect(schema.safeParse({ level: 2 }).success).toBe(false);
         expect(schema.safeParse({ level: 1 }).success).toBe(true);
     });
+
+    it('should enforce required checkbox as true', () => {
+        const fields: FieldSchema[] = [
+            {
+                id: 'acceptTerms',
+                type: 'checkbox',
+                label: 'Accept Terms',
+                validation: { required: true },
+            },
+        ];
+        const schema = generateZodSchema(fields);
+
+        expect(schema.safeParse({ acceptTerms: true }).success).toBe(true);
+        expect(schema.safeParse({ acceptTerms: false }).success).toBe(false);
+    });
+
+    it('should enforce required select value', () => {
+        const fields: FieldSchema[] = [
+            {
+                id: 'plan',
+                type: 'select',
+                label: 'Plan',
+                options: [{ label: 'Basic', value: 'basic' }, { label: 'Pro', value: 'pro' }],
+                validation: { required: true },
+            },
+        ];
+        const schema = generateZodSchema(fields);
+
+        expect(schema.safeParse({ plan: 'pro' }).success).toBe(true);
+        expect(schema.safeParse({}).success).toBe(false);
+    });
+
+    it('should return user-friendly required message for missing string fields', () => {
+        const fields: FieldSchema[] = [
+            {
+                id: 'fullName',
+                type: 'text',
+                label: 'Full Name',
+                validation: { required: true, message: 'Please enter your full name.' },
+            },
+        ];
+        const schema = generateZodSchema(fields);
+        const result = schema.safeParse({});
+
+        expect(result.success).toBe(false);
+        if (!result.success) {
+            expect(result.error.issues[0]?.message).toBe('Please enter your full name.');
+        }
+    });
 });

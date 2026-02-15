@@ -40,9 +40,9 @@ export const RadioGroupInput = <T extends FieldValues>({ field, register, error 
                             id={`${field.id}-${option.value}`}
                             value={option.value}
                             {...register(field.id as Path<T>, registerOptions)}
-                            className="h-4 w-4 border-gray-300 text-primary focus:ring-primary"
+                            className="h-4 w-4 border-gray-300 text-gray-900 focus:ring-gray-400"
                         />
-                        <label htmlFor={`${field.id}-${option.value}`} className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                        <label htmlFor={`${field.id}-${option.value}`} className="text-sm font-medium leading-none text-gray-900 peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                             {option.label}
                         </label>
                     </div>

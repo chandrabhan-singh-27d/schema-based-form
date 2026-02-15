@@ -3,6 +3,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { DynamicForm } from './index';
 import { FormSchema } from '@/lib/schema-types';
+import contactUsSchema from '@/form-schemas/contact-us.json';
 
 describe('DynamicForm', () => {
     const schema: FormSchema = {
@@ -45,16 +46,18 @@ describe('DynamicForm', () => {
     it('blocks submit and shows validation message for invalid input', async () => {
         const user = userEvent.setup();
         const onSubmit = vi.fn();
+        const onInvalid = vi.fn();
 
-        render(<DynamicForm schema={schema} onSubmit={onSubmit} />);
+        render(<DynamicForm schema={schema} onSubmit={onSubmit} onInvalid={onInvalid} />);
 
         await user.click(screen.getByRole('button', { name: 'Submit' }));
 
         await waitFor(() => {
             expect(onSubmit).toHaveBeenCalledTimes(0);
         });
+        expect(onInvalid).toHaveBeenCalledTimes(1);
 
-        expect(screen.getByText('Required')).toBeDefined();
+        expect(screen.getAllByRole('alert').length).toBeGreaterThan(0);
     });
 
     it('does not submit hidden conditional field values', async () => {
@@ -92,5 +95,22 @@ describe('DynamicForm', () => {
         });
 
         expect(onSubmit).toHaveBeenCalledWith({ role: 'user' }, expect.anything());
+    });
+
+    it('submits contact-us schema when all required values are filled', async () => {
+        const user = userEvent.setup();
+        const onSubmit = vi.fn();
+
+        render(<DynamicForm schema={contactUsSchema as FormSchema} onSubmit={onSubmit} />);
+
+        await user.type(screen.getByLabelText(/Your Name/i), 'Jane Doe');
+        await user.type(screen.getByLabelText(/Email Address/i), 'jane@example.com');
+        await user.selectOptions(screen.getByRole('combobox', { name: /Topic/i }), 'general');
+        await user.type(screen.getByLabelText(/Message/i), 'I need help with my account details.');
+        await user.click(screen.getByRole('button', { name: 'Submit' }));
+
+        await waitFor(() => {
+            expect(onSubmit).toHaveBeenCalledTimes(1);
+        });
     });
 });

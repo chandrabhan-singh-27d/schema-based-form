@@ -1,0 +1,126 @@
+{
+  "id": "user-registration",
+  "title": "User Registration",
+  "description": "Please fill out the form below to create an account. Fields marked with * are required.",
+  "successMessage": "Welcome aboard. Your account request is in and you can continue to profile setup.",
+  "fields": [
+    {
+      "id": "fullName",
+      "type": "text",
+      "label": "Full Name",
+      "placeholder": "John Doe",
+      "validation": {
+        "required": true,
+        "minLength": 2,
+        "message": "Please enter your full name (at least 2 characters)."
+      }
+    },
+    {
+      "id": "email",
+      "type": "email",
+      "label": "Email Address",
+      "placeholder": "john@example.com",
+      "validation": {
+        "required": true,
+        "pattern": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
+        "message": "Please enter a valid email address."
+      }
+    },
+    {
+      "id": "password",
+      "type": "password",
+      "label": "Password",
+      "placeholder": "********",
+      "validation": {
+        "required": true,
+        "minLength": 8,
+        "message": "Use a password with at least 8 characters."
+      }
+    },
+    {
+      "id": "role",
+      "type": "select",
+      "label": "Role",
+      "placeholder": "Select a role",
+      "options": [
+        { "label": "User", "value": "user" },
+        { "label": "Admin", "value": "admin" },
+        { "label": "Developer", "value": "developer" }
+      ],
+      "validation": {
+        "required": true,
+        "message": "Please select a role to continue."
+      }
+    },
+    {
+      "id": "githubUrl",
+      "type": "text",
+      "label": "GitHub Profile URL",
+      "placeholder": "https://github.com/...",
+      "conditions": [
+        {
+          "field": "role",
+          "operator": "eq",
+          "value": "developer"
+        }
+      ],
+      "validation": {
+        "pattern": "^https:\\/\\/github\\.com\\/.*$",
+        "message": "Enter a valid GitHub profile URL."
+      }
+    },
+    {
+      "id": "adminCode",
+      "type": "text",
+      "label": "Admin Access Code",
+      "placeholder": "Enter admin code",
+      "conditions": [
+        {
+          "field": "role",
+          "operator": "eq",
+          "value": "admin"
+        }
+      ],
+      "validation": {
+        "required": true,
+        "message": "Admin code is required for admin role."
+      }
+    },
+    {
+      "id": "newsletter",
+      "type": "checkbox",
+      "label": "Subscribe to newsletter",
+      "description": "Receive updates about our products."
+    },
+    {
+      "id": "newsletterFrequency",
+      "type": "radio",
+      "label": "Newsletter Frequency",
+      "options": [
+        { "label": "Weekly", "value": "weekly" },
+        { "label": "Monthly", "value": "monthly" }
+      ],
+      "conditions": [
+        {
+          "field": "newsletter",
+          "operator": "eq",
+          "value": true
+        }
+      ],
+      "validation": {
+        "required": true,
+        "message": "Choose how often you want to receive updates."
+      }
+    },
+    {
+      "id": "bio",
+      "type": "textarea",
+      "label": "Bio",
+      "placeholder": "Tell us a bit about yourself",
+      "validation": {
+        "maxLength": 200,
+        "message": "Bio must be 200 characters or fewer."
+      }
+    }
+  ]
+}

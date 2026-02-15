@@ -1,0 +1,70 @@
+{
+  "id": "newsletter-preferences",
+  "title": "Newsletter Preferences",
+  "description": "Choose how often you want to hear from us and what updates you care about.",
+  "successMessage": "Preferences saved. We will tailor updates to what you selected.",
+  "fields": [
+    {
+      "id": "email",
+      "type": "email",
+      "label": "Email Address",
+      "placeholder": "you@example.com",
+      "validation": {
+        "required": true,
+        "message": "Please enter a valid email address."
+      }
+    },
+    {
+      "id": "frequency",
+      "type": "radio",
+      "label": "Email Frequency",
+      "options": [
+        { "label": "Weekly", "value": "weekly" },
+        { "label": "Bi-Weekly", "value": "bi-weekly" },
+        { "label": "Monthly", "value": "monthly" }
+      ],
+      "validation": {
+        "required": true,
+        "message": "Please select an email frequency."
+      }
+    },
+    {
+      "id": "interests",
+      "type": "select",
+      "label": "Primary Interest",
+      "options": [
+        { "label": "Deals", "value": "deals" },
+        { "label": "New Arrivals", "value": "new-arrivals" },
+        { "label": "Product Tips", "value": "tips" }
+      ],
+      "validation": {
+        "required": true,
+        "message": "Please choose your primary interest."
+      }
+    },
+    {
+      "id": "smsOptIn",
+      "type": "checkbox",
+      "label": "Also send occasional SMS alerts",
+      "description": "You can opt out at any time."
+    },
+    {
+      "id": "phone",
+      "type": "text",
+      "label": "Phone Number",
+      "placeholder": "+1 555 123 4567",
+      "conditions": [
+        {
+          "field": "smsOptIn",
+          "operator": "eq",
+          "value": true
+        }
+      ],
+      "validation": {
+        "required": true,
+        "pattern": "^[+0-9()\\-\\s]{7,20}$",
+        "message": "Please enter a valid phone number for SMS updates."
+      }
+    }
+  ]
+}
