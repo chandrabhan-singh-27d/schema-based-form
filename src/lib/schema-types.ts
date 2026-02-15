@@ -10,4 +10,4 @@ export type {
     RuleNode,
     SubmissionRecord,
     ValidationRule,
-} from '@/features/forms/domain/types';
+} from '@forms/domain/types';

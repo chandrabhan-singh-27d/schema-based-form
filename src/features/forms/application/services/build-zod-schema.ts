@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { FieldSchema } from '@/features/forms/domain/types';
-import { evaluateFieldConditions } from '@/features/forms/domain/rules/evaluate-field-conditions';
+import { FieldSchema } from '@forms/domain/types';
+import { evaluateFieldConditions } from '@forms/domain/rules/evaluate-field-conditions';
 
 const STRING_FIELD_TYPES = new Set(['text', 'email', 'password', 'textarea']);
 const DEFAULT_REQUIRED_MESSAGE = 'Please fill out this field.';

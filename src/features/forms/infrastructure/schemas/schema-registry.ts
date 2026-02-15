@@ -1,8 +1,8 @@
-import { FormSchema } from '@/features/forms/domain/types';
-import checkoutShippingSchema from '@/form-schemas/checkout-shipping.json';
-import contactUsSchema from '@/form-schemas/contact-us.json';
-import newsletterPreferencesSchema from '@/form-schemas/newsletter-preferences.json';
-import userRegistrationSchema from '@/form-schemas/user-registration.json';
+import { FormSchema } from '@forms/domain/types';
+import checkoutShippingSchema from '@schemas/checkout-shipping.json';
+import contactUsSchema from '@schemas/contact-us.json';
+import newsletterPreferencesSchema from '@schemas/newsletter-preferences.json';
+import userRegistrationSchema from '@schemas/user-registration.json';
 import { normalizeFormSchemas } from './normalize-form-schema';
 
 /**

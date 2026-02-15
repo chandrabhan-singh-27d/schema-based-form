@@ -1,8 +1,8 @@
 import { describe, it, expect, vi } from 'vitest';
 import { createSubmitFormUseCase } from './submit-form';
-import { SubmissionRepository } from '@/features/forms/application/ports/submission-repository';
-import { Notifier } from '@/features/forms/application/ports/notifier';
-import { FormSchema } from '@/features/forms/domain/types';
+import { SubmissionRepository } from '@forms/application/ports/submission-repository';
+import { Notifier } from '@forms/application/ports/notifier';
+import { FormSchema } from '@forms/domain/types';
 
 describe('createSubmitFormUseCase', () => {
     const schema: FormSchema = {

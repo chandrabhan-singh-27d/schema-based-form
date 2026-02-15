@@ -1,5 +1,5 @@
 import { useSyncExternalStore } from 'react';
-import { SubmissionRepository } from '@/features/forms/application/ports/submission-repository';
+import { SubmissionRepository } from '@forms/application/ports/submission-repository';
 
 /**
  * Hydration-safe subscription to live session submission count.

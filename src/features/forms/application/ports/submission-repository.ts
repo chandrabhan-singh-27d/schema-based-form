@@ -1,4 +1,4 @@
-import { SubmissionRecord } from '@/features/forms/domain/types';
+import { SubmissionRecord } from '@forms/domain/types';
 
 export interface SubmissionRepository {
     list(): SubmissionRecord[];

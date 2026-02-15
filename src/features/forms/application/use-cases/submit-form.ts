@@ -1,7 +1,7 @@
 import { FieldValues } from 'react-hook-form';
-import { Notifier } from '@/features/forms/application/ports/notifier';
-import { SubmissionRepository } from '@/features/forms/application/ports/submission-repository';
-import { FormSchema, SubmissionRecord } from '@/features/forms/domain/types';
+import { Notifier } from '@forms/application/ports/notifier';
+import { SubmissionRepository } from '@forms/application/ports/submission-repository';
+import { FormSchema, SubmissionRecord } from '@forms/domain/types';
 
 interface SubmitFormDeps {
     repository: SubmissionRepository;

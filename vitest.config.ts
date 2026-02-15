@@ -10,6 +10,10 @@ export default defineConfig({
         setupFiles: [],
         alias: {
             '@': path.resolve(__dirname, './src'),
+            '@components': path.resolve(__dirname, './src/components'),
+            '@lib': path.resolve(__dirname, './src/lib'),
+            '@schemas': path.resolve(__dirname, './src/form-schemas'),
+            '@forms': path.resolve(__dirname, './src/features/forms'),
         },
     },
 });

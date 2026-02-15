@@ -15,6 +15,9 @@ const eslintConfig = defineConfig([
             "@/features/forms/application/**",
             "@/features/forms/infrastructure/**",
             "@/features/forms/presentation/**",
+            "@forms/application/**",
+            "@forms/infrastructure/**",
+            "@forms/presentation/**",
           ],
         },
       ],
@@ -29,6 +32,8 @@ const eslintConfig = defineConfig([
           patterns: [
             "@/features/forms/infrastructure/**",
             "@/features/forms/presentation/**",
+            "@forms/infrastructure/**",
+            "@forms/presentation/**",
           ],
         },
       ],

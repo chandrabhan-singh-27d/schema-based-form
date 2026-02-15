@@ -1,5 +1,5 @@
-import { SubmissionRepository } from '@/features/forms/application/ports/submission-repository';
-import { SubmissionRecord } from '@/features/forms/domain/types';
+import { SubmissionRepository } from '@forms/application/ports/submission-repository';
+import { SubmissionRecord } from '@forms/domain/types';
 
 const SESSION_STORAGE_KEY = 'dynamic-form:submissions';
 const SESSION_SUBMISSIONS_UPDATED_EVENT = 'session-submissions-updated';

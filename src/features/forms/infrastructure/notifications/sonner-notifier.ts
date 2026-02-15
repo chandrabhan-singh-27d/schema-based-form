@@ -1,5 +1,5 @@
 import { toast } from 'sonner';
-import { Notifier } from '@/features/forms/application/ports/notifier';
+import { Notifier } from '@forms/application/ports/notifier';
 
 export const sonnerNotifier: Notifier = {
     success: (title, description) => {

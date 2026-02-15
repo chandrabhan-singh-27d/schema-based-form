@@ -1,15 +1,15 @@
 "use client";
 
-import { DynamicForm } from "@/components/dynamic-form";
-import { formSchemas } from "@/form-schemas";
+import { DynamicForm } from "@components/dynamic-form";
+import { formSchemas } from "@schemas/index";
 import { useMemo, useState } from "react";
 import { FieldErrors, FieldValues } from "react-hook-form";
 import { Toaster } from "sonner";
-import { getFirstErrorMessage } from "@/features/forms/application/use-cases/get-first-error-message";
-import { createSubmitFormUseCase } from "@/features/forms/application/use-cases/submit-form";
-import { sessionSubmissionRepository } from "@/features/forms/infrastructure/persistence/session-submission-repository";
-import { sonnerNotifier } from "@/features/forms/infrastructure/notifications/sonner-notifier";
-import { useSessionSubmissionCount } from "@/features/forms/presentation/hooks/use-session-submission-count";
+import { getFirstErrorMessage } from "@forms/application/use-cases/get-first-error-message";
+import { createSubmitFormUseCase } from "@forms/application/use-cases/submit-form";
+import { sessionSubmissionRepository } from "@forms/infrastructure/persistence/session-submission-repository";
+import { sonnerNotifier } from "@forms/infrastructure/notifications/sonner-notifier";
+import { useSessionSubmissionCount } from "@forms/presentation/hooks/use-session-submission-count";
 
 export default function Home() {
   const defaultSchemaId = formSchemas[0]?.id ?? "";

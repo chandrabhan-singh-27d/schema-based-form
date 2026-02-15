@@ -1,12 +1,12 @@
 import React from 'react';
 import { UseFormReturn, FieldValues, FieldError } from 'react-hook-form';
-import { FieldSchema } from '@/lib/schema-types';
+import { FieldSchema } from '@lib/schema-types';
 import { TextInput } from './fields/text-input';
 import { SelectInput } from './fields/select-input';
 import { CheckboxInput } from './fields/checkbox-input';
 import { RadioGroupInput } from './fields/radio-group-input';
 import { TextareaInput } from './fields/textarea-input';
-import { evaluateFieldConditions } from '@/features/forms/domain/rules/evaluate-field-conditions';
+import { evaluateFieldConditions } from '@forms/domain/rules/evaluate-field-conditions';
 
 interface FieldFactoryProps<T extends FieldValues> {
     field: FieldSchema;

@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { RadioGroupInput } from './radio-group-input';
-import { FieldSchema } from '@/lib/schema-types';
+import { FieldSchema } from '@lib/schema-types';
 
 describe('RadioGroupInput', () => {
     const mockRegister = vi.fn().mockImplementation((name) => ({

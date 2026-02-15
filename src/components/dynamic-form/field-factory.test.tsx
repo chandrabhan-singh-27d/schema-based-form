@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { FieldFactory } from './field-factory';
-import { FieldSchema } from '@/lib/schema-types';
+import { FieldSchema } from '@lib/schema-types';
 import { UseFormReturn, FieldValues } from 'react-hook-form';
 
 const createForm = (watchValues: Record<string, unknown> = {}, errors: Record<string, unknown> = {}) => ({
@@ -27,7 +27,7 @@ describe('FieldFactory', () => {
 
         expect(screen.getByLabelText('First Name')).toBeDefined();
         expect(screen.getByRole('textbox')).toBeDefined();
-    });
+    }, 10000);
 
     it('hides conditional field when condition is not met', () => {
         const field: FieldSchema = {

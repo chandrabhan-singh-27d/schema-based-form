@@ -1,10 +1,10 @@
 import React, { useMemo } from 'react';
 import { useForm, FieldValues, FieldErrors } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { FormSchema } from '@/lib/schema-types';
-import { buildZodSchema } from '@/features/forms/application/services/build-zod-schema';
+import { FormSchema } from '@lib/schema-types';
+import { buildZodSchema } from '@forms/application/services/build-zod-schema';
 import { FieldFactory } from './field-factory';
-import { cn } from '@/lib/utils';
+import { cn } from '@lib/utils';
 
 interface DynamicFormProps {
     schema: FormSchema;

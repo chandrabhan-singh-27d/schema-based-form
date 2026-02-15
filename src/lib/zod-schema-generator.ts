@@ -1,1 +1,1 @@
-export { buildZodSchema as generateZodSchema } from '@/features/forms/application/services/build-zod-schema';
+export { buildZodSchema as generateZodSchema } from '@forms/application/services/build-zod-schema';

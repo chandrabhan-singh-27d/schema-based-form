@@ -1,1 +1,1 @@
-export { formSchemas, formSchemaMap } from '@/features/forms/infrastructure/schemas/schema-registry';
+export { formSchemas, formSchemaMap } from '@forms/infrastructure/schemas/schema-registry';

@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { FormSchema } from '@/features/forms/domain/types';
+import { FormSchema } from '@forms/domain/types';
 
 const conditionalRuleSchema = z.object({
     field: z.string(),

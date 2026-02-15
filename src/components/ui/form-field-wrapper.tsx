@@ -1,6 +1,6 @@
 import React from 'react';
 import { FieldError } from 'react-hook-form';
-import { cn } from '@/lib/utils';
+import { cn } from '@lib/utils';
 
 interface FormFieldWrapperProps {
     label: string;

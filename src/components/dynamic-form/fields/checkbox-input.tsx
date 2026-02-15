@@ -1,7 +1,7 @@
 import React from 'react';
 import { UseFormRegister, FieldValues, Path, FieldError } from 'react-hook-form';
-import { FieldSchema } from '@/lib/schema-types';
-import { cn } from '@/lib/utils';
+import { FieldSchema } from '@lib/schema-types';
+import { cn } from '@lib/utils';
 
 interface CheckboxInputProps<T extends FieldValues> {
     field: FieldSchema;

@@ -1,8 +1,8 @@
 import React from 'react';
 import { UseFormRegister, FieldValues, Path, FieldError } from 'react-hook-form';
-import { FieldSchema } from '@/lib/schema-types';
-import { FormFieldWrapper } from '@/components/ui/form-field-wrapper';
-import { cn } from '@/lib/utils';
+import { FieldSchema } from '@lib/schema-types';
+import { FormFieldWrapper } from '@components/ui/form-field-wrapper';
+import { cn } from '@lib/utils';
 
 interface RadioGroupInputProps<T extends FieldValues> {
     field: FieldSchema;

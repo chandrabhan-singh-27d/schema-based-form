@@ -2,8 +2,8 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { DynamicForm } from './index';
-import { FormSchema } from '@/lib/schema-types';
-import contactUsSchema from '@/form-schemas/contact-us.json';
+import { FormSchema } from '@lib/schema-types';
+import contactUsSchema from '@schemas/contact-us.json';
 
 describe('DynamicForm', () => {
     const schema: FormSchema = {

@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { TextInput } from './text-input';
-import { FieldSchema } from '@/lib/schema-types';
+import { FieldSchema } from '@lib/schema-types';
 
 describe('TextInput', () => {
     const mockRegister = vi.fn().mockImplementation((name) => ({

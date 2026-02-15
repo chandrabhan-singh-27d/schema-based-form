@@ -26,6 +26,18 @@
     "paths": {
       "@/*": [
         "./src/*"
+      ],
+      "@components/*": [
+        "./src/components/*"
+      ],
+      "@lib/*": [
+        "./src/lib/*"
+      ],
+      "@schemas/*": [
+        "./src/form-schemas/*"
+      ],
+      "@forms/*": [
+        "./src/features/forms/*"
       ]
     }
   },
