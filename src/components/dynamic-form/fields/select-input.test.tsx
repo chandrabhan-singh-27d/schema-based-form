@@ -42,4 +42,19 @@ describe('SelectInput', () => {
         const placeholder = screen.getByText('Select an option');
         expect(placeholder).toBeDefined();
     });
+
+    it('coerces matching numeric option values', () => {
+        const numericField: FieldSchema = {
+            id: 'level',
+            type: 'select',
+            label: 'Level',
+            options: [{ label: 'One', value: 1 }, { label: 'Two', value: 2 }],
+        };
+
+        render(<SelectInput field={numericField} register={mockRegister} />);
+        const registerOptions = mockRegister.mock.calls.at(-1)?.[1];
+
+        expect(registerOptions.setValueAs('2')).toBe(2);
+        expect(registerOptions.setValueAs('')).toBeUndefined();
+    });
 });

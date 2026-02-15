@@ -64,4 +64,44 @@ describe('generateZodSchema', () => {
         // Country is CA, State is hidden/not required
         expect(schema.safeParse({ country: 'CA' }).success).toBe(true);
     });
+
+    it('should reject select values not present in options', () => {
+        const fields: FieldSchema[] = [
+            {
+                id: 'role',
+                type: 'select',
+                label: 'Role',
+                options: [{ label: 'User', value: 'user' }, { label: 'Admin', value: 'admin' }],
+                validation: { required: true },
+            },
+        ];
+        const schema = generateZodSchema(fields);
+
+        expect(schema.safeParse({ role: 'admin' }).success).toBe(true);
+        expect(schema.safeParse({ role: 'hacker' }).success).toBe(false);
+    });
+
+    it('should evaluate numeric conditional rules with numeric data', () => {
+        const fields: FieldSchema[] = [
+            {
+                id: 'level',
+                type: 'select',
+                label: 'Level',
+                options: [{ label: 'One', value: 1 }, { label: 'Two', value: 2 }],
+                validation: { required: true },
+            },
+            {
+                id: 'code',
+                type: 'text',
+                label: 'Code',
+                conditions: [{ field: 'level', operator: 'eq', value: 2 }],
+                validation: { required: true },
+            },
+        ];
+        const schema = generateZodSchema(fields);
+
+        expect(schema.safeParse({ level: 2, code: 'XYZ' }).success).toBe(true);
+        expect(schema.safeParse({ level: 2 }).success).toBe(false);
+        expect(schema.safeParse({ level: 1 }).success).toBe(true);
+    });
 });

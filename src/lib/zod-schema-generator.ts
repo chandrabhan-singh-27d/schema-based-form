@@ -1,6 +1,27 @@
 import { z } from 'zod';
 import { FieldSchema, ConditionalRule } from './schema-types';
 
+const STRING_FIELD_TYPES = new Set(['text', 'email', 'password', 'textarea']);
+
+const buildOptionsSchema = (field: FieldSchema): z.ZodTypeAny => {
+    const optionValues = field.options?.map((option) => option.value) ?? [];
+
+    if (optionValues.length === 0) {
+        return z.string();
+    }
+
+    if (optionValues.length === 1) {
+        return z.literal(optionValues[0]);
+    }
+
+    const [first, second, ...rest] = optionValues;
+    return z.union([
+        z.literal(first),
+        z.literal(second),
+        ...rest.map((value) => z.literal(value)),
+    ]);
+};
+
 /**
  * Generates a Zod schema for a single field based on its validation rules.
  * @param field The field schema definition.
@@ -11,14 +32,17 @@ const generateFieldSchema = (field: FieldSchema) => {
 
     switch (field.type) {
         case 'number':
-            schema = z.number({ message: "Must be a number" });
+            schema = z.number({ message: 'Must be a number' });
             break;
         case 'checkbox':
             schema = z.boolean();
             break;
         case 'email':
-            // start with string, email validation added later if needed or here
-            schema = z.string().email({ message: "Invalid email address" });
+            schema = z.string().email({ message: 'Invalid email address' });
+            break;
+        case 'select':
+        case 'radio':
+            schema = buildOptionsSchema(field);
             break;
         default:
             schema = z.string();
@@ -27,52 +51,38 @@ const generateFieldSchema = (field: FieldSchema) => {
     const { validation } = field;
 
     if (!validation) {
-        if (field.type !== 'checkbox') {
+        if (STRING_FIELD_TYPES.has(field.type)) {
             return schema.optional().or(z.literal(''));
         }
         return schema.optional();
     }
 
-    // Apply refinements *before* making it optional
-    if (validation.required) {
-        if (field.type === 'text' || field.type === 'email' || field.type === 'password' || field.type === 'textarea' || field.type === 'select' || field.type === 'radio') {
-            schema = (schema as z.ZodString).min(1, { message: validation.message || "Required" });
-        }
+    if (validation.required && STRING_FIELD_TYPES.has(field.type)) {
+        schema = (schema as z.ZodString).min(1, { message: validation.message || 'Required' });
     }
 
-    if (validation.min !== undefined) {
-        if (field.type === 'number') {
-            schema = (schema as z.ZodNumber).min(validation.min, { message: validation.message || `Must be at least ${validation.min}` });
-        }
+    if (validation.min !== undefined && field.type === 'number') {
+        schema = (schema as z.ZodNumber).min(validation.min, { message: validation.message || `Must be at least ${validation.min}` });
     }
 
-    if (validation.max !== undefined) {
-        if (field.type === 'number') {
-            schema = (schema as z.ZodNumber).max(validation.max, { message: validation.message || `Must be at most ${validation.max}` });
-        }
+    if (validation.max !== undefined && field.type === 'number') {
+        schema = (schema as z.ZodNumber).max(validation.max, { message: validation.message || `Must be at most ${validation.max}` });
     }
 
-    if (validation.minLength !== undefined) {
-        if (field.type === 'text' || field.type === 'password' || field.type === 'textarea' || field.type === 'email') {
-            schema = (schema as z.ZodString).min(validation.minLength, { message: validation.message || `Must be at least ${validation.minLength} characters` });
-        }
+    if (validation.minLength !== undefined && STRING_FIELD_TYPES.has(field.type)) {
+        schema = (schema as z.ZodString).min(validation.minLength, { message: validation.message || `Must be at least ${validation.minLength} characters` });
     }
 
-    if (validation.maxLength !== undefined) {
-        if (field.type === 'text' || field.type === 'password' || field.type === 'textarea' || field.type === 'email') {
-            schema = (schema as z.ZodString).max(validation.maxLength, { message: validation.message || `Must be at most ${validation.maxLength} characters` });
-        }
+    if (validation.maxLength !== undefined && STRING_FIELD_TYPES.has(field.type)) {
+        schema = (schema as z.ZodString).max(validation.maxLength, { message: validation.message || `Must be at most ${validation.maxLength} characters` });
     }
 
-    if (validation.pattern) {
-        if (field.type === 'text' || field.type === 'password' || field.type === 'textarea' || field.type === 'email') {
-            schema = (schema as z.ZodString).regex(new RegExp(validation.pattern), { message: validation.message || "Invalid format" });
-        }
+    if (validation.pattern && STRING_FIELD_TYPES.has(field.type)) {
+        schema = (schema as z.ZodString).regex(new RegExp(validation.pattern), { message: validation.message || 'Invalid format' });
     }
 
-    // Handle optionality last
     if (!validation.required) {
-        if (field.type !== 'checkbox') {
+        if (STRING_FIELD_TYPES.has(field.type)) {
             schema = schema.optional().or(z.literal(''));
         } else {
             schema = schema.optional();
@@ -97,9 +107,13 @@ const evaluateConditions = (conditions: ConditionalRule[], data: Record<string, 
             case 'neq':
                 return dependentValue !== condition.value;
             case 'in':
-                return Array.isArray(condition.value) && condition.value.includes(dependentValue);
+                return Array.isArray(condition.value)
+                    ? condition.value.some((value) => value === dependentValue)
+                    : false;
             case 'nin':
-                return Array.isArray(condition.value) && !condition.value.includes(dependentValue);
+                return Array.isArray(condition.value)
+                    ? !condition.value.some((value) => value === dependentValue)
+                    : false;
             default:
                 return true;
         }
@@ -117,8 +131,6 @@ export const generateZodSchema = (fields: FieldSchema[]) => {
 
     fields.forEach((field) => {
         if (field.conditions && field.conditions.length > 0) {
-            // participating in conditional logic: allow anything initially
-            // strict validation happens in superRefine
             shape[field.id] = z.unknown();
             conditionalFields.push(field);
         } else {

@@ -29,7 +29,8 @@ describe('CheckboxInput', () => {
         render(<CheckboxInput field={defaultField} register={mockRegister} error={error} />);
 
         expect(screen.getByText('You must agree')).toBeDefined();
-        // Checkbox wrapper usually handles error text
+        expect(screen.getByText('You must agree').getAttribute('id')).toBe('test-checkbox-error');
+        expect(screen.getByRole('checkbox').getAttribute('aria-describedby')).toBe('test-checkbox-error');
     });
 
     it('applies validation required asterisk', () => {

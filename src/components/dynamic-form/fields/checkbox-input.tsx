@@ -38,7 +38,7 @@ export const CheckboxInput = <T extends FieldValues>({ field, register, error }:
                 </div>
             </div>
             {error && (
-                <p className="text-sm font-medium text-red-500">{error.message}</p>
+                <p id={`${field.id}-error`} className="text-sm font-medium text-red-500">{error.message}</p>
             )}
         </div>
     );

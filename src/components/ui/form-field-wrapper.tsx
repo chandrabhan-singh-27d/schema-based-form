@@ -25,6 +25,7 @@ export const FormFieldWrapper: React.FC<FormFieldWrapperProps> = ({
         <div className={cn("flex flex-col gap-1.5", className)}>
             <label
                 htmlFor={id}
+                id={`${id}-label`}
                 className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
             >
                 {label}

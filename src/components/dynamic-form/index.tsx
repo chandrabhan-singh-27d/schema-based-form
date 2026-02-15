@@ -19,6 +19,7 @@ export const DynamicForm: React.FC<DynamicFormProps> = ({ schema, onSubmit, clas
     const form = useForm({
         resolver: zodResolver(zodSchema),
         defaultValues: defaultValues || {},
+        shouldUnregister: true,
         mode: 'onBlur', // Validate on blur for better performance
     });
 

@@ -27,6 +27,7 @@ describe('RadioGroupInput', () => {
         expect(screen.getByText('Role')).toBeDefined();
         expect(screen.getAllByRole('radio')).toHaveLength(2);
         expect(screen.getByRole('radiogroup')).toBeDefined();
+        expect(screen.getByRole('radiogroup').getAttribute('aria-labelledby')).toBe('test-radio-label');
     });
 
     it('shows error message', () => {
@@ -34,5 +35,18 @@ describe('RadioGroupInput', () => {
         render(<RadioGroupInput field={defaultField} register={mockRegister} error={error} />);
 
         expect(screen.getByText('Role is required')).toBeDefined();
+    });
+
+    it('coerces matching numeric option values', () => {
+        const numericField: FieldSchema = {
+            id: 'priority',
+            type: 'radio',
+            label: 'Priority',
+            options: [{ label: 'High', value: 1 }, { label: 'Low', value: 2 }],
+        };
+        render(<RadioGroupInput field={numericField} register={mockRegister} />);
+        const registerOptions = mockRegister.mock.calls.at(-1)?.[1];
+
+        expect(registerOptions.setValueAs('1')).toBe(1);
     });
 });

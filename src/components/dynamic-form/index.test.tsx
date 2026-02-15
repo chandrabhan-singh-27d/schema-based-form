@@ -56,4 +56,41 @@ describe('DynamicForm', () => {
 
         expect(screen.getByText('Required')).toBeDefined();
     });
+
+    it('does not submit hidden conditional field values', async () => {
+        const user = userEvent.setup();
+        const onSubmit = vi.fn();
+        const conditionalSchema: FormSchema = {
+            id: 'conditional-form',
+            title: 'Conditional Form',
+            fields: [
+                {
+                    id: 'role',
+                    type: 'select',
+                    label: 'Role',
+                    options: [{ label: 'Admin', value: 'admin' }, { label: 'User', value: 'user' }],
+                    validation: { required: true },
+                },
+                {
+                    id: 'adminCode',
+                    type: 'text',
+                    label: 'Admin Code',
+                    conditions: [{ field: 'role', operator: 'eq', value: 'admin' }],
+                },
+            ],
+        };
+
+        render(<DynamicForm schema={conditionalSchema} onSubmit={onSubmit} />);
+
+        await user.selectOptions(screen.getByRole('combobox', { name: /Role/ }), 'admin');
+        await user.type(screen.getByLabelText('Admin Code'), 'SECRET');
+        await user.selectOptions(screen.getByRole('combobox', { name: /Role/ }), 'user');
+        await user.click(screen.getByRole('button', { name: 'Submit' }));
+
+        await waitFor(() => {
+            expect(onSubmit).toHaveBeenCalledTimes(1);
+        });
+
+        expect(onSubmit).toHaveBeenCalledWith({ role: 'user' }, expect.anything());
+    });
 });

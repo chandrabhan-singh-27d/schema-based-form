@@ -13,7 +13,7 @@ A powerful, type-safe dynamic form generator for Next.js applications related. B
 
 ## Tech Stack
 
-- **Framework**: Next.js 14 (App Router)
+- **Framework**: Next.js 16 (App Router)
 - **Language**: TypeScript
 - **Form Handling**: React Hook Form
 - **Validation**: Zod & @hookform/resolvers

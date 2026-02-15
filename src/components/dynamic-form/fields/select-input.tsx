@@ -11,6 +11,14 @@ interface SelectInputProps<T extends FieldValues> {
 }
 
 export const SelectInput = <T extends FieldValues>({ field, register, error }: SelectInputProps<T>) => {
+    const registerOptions = {
+        setValueAs: (value: string) => {
+            if (value === '') return undefined;
+            const matchedOption = field.options?.find((option) => String(option.value) === value);
+            return matchedOption ? matchedOption.value : value;
+        },
+    };
+
     return (
         <FormFieldWrapper
             label={field.label}
@@ -22,7 +30,7 @@ export const SelectInput = <T extends FieldValues>({ field, register, error }: S
         >
             <select
                 id={field.id}
-                {...register(field.id as Path<T>)}
+                {...register(field.id as Path<T>, registerOptions)}
                 aria-invalid={!!error}
                 aria-describedby={error ? `${field.id}-error` : undefined}
                 className={cn(
