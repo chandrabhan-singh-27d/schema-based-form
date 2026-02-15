@@ -1,5 +1,9 @@
 # Schema-Based Dynamic Form Renderer
 
+> New here? Jump to the guided breakdown: **[Project Compass: Complete Walkthrough](./PROJECT_COMPASS.md)** for a piece-by-piece explanation of how this repository works.
+> 
+> Think of this repo as: JSON in, smart forms out. No JSX spaghetti required 🍝
+
 A powerful, type-safe dynamic form generator for Next.js applications related. Built with React Hook Form, Zod, and Tailwind CSS, this project allows you to define complex forms entirely via JSON/TypeScript schemas.
 
 ## Key Features
@@ -23,7 +27,7 @@ A powerful, type-safe dynamic form generator for Next.js applications related. B
 
 ### Prerequisites
 
-- Node.js 18.17 or later
+- Node.js 18.17 or later (newer is fine too 🚀)
 
 ### Installation
 
@@ -51,6 +55,7 @@ npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the example form.
+If everything looks good, you now own a tiny rules-powered form engine 🧠
 
 ## Usage
 
@@ -130,3 +135,4 @@ export default function ContactPage() {
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
+Bonus points for clean tests and user-friendly validation copy ✨
