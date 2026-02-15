@@ -15,8 +15,8 @@ export interface ValidationRule {
     minLength?: number;
     maxLength?: number;
     pattern?: string;
-    custom?: string; // For future custom validation logic names
-    message?: string; // Custom error message
+    custom?: string; // Reserved hook for named custom validators.
+    message?: string; // User-facing message used for this field's validation failures.
 }
 
 export type ConditionalOperator = 'eq' | 'neq' | 'in' | 'nin';
@@ -38,11 +38,11 @@ export interface FieldSchema {
     label: string;
     placeholder?: string;
     defaultValue?: unknown;
-    options?: Option[]; // For select, radio
+    options?: Option[]; // Allowed options for select/radio fields.
     validation?: ValidationRule;
     conditions?: ConditionalRule[];
     description?: string;
-    className?: string; // For custom styling overrides
+    className?: string; // Optional per-field style override.
 }
 
 export interface FormSchema {

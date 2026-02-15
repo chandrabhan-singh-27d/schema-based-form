@@ -16,7 +16,7 @@ export const FieldFactory = <T extends FieldValues>({ field, form }: FieldFactor
     const { register, formState: { errors }, watch } = form;
     const error = errors[field.id];
 
-    // Conditional Logic Check
+    // Hide fields until all configured display conditions evaluate to true.
     if (field.conditions && field.conditions.length > 0) {
         const shouldShow = field.conditions.every((condition) => {
             const dependentValue = watch(condition.field as Path<T>);
@@ -38,7 +38,7 @@ export const FieldFactory = <T extends FieldValues>({ field, form }: FieldFactor
         if (!shouldShow) return null;
     }
 
-    // Common props
+    // Shared props passed to every concrete field component.
     const commonProps = {
         field,
         register,

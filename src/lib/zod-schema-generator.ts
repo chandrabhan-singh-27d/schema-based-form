@@ -103,9 +103,8 @@ const generateFieldSchema = (field: FieldSchema) => {
 };
 
 /**
- * Generates a complete Zod object schema for a form based on a list of fields.
- * @param fields Array of field schema definitions.
- * @returns A Zod object schema.
+ * Evaluates whether a field should be active for the current form data.
+ * All conditions must pass for the field to be considered visible/required.
  */
 const evaluateConditions = (conditions: ConditionalRule[], data: Record<string, unknown>): boolean => {
     return conditions.every((condition) => {
@@ -131,9 +130,9 @@ const evaluateConditions = (conditions: ConditionalRule[], data: Record<string, 
 };
 
 /**
- * Generates a complete Zod object schema for a form based on a list of fields.
+ * Generates a form-level Zod schema from field definitions.
  * @param fields Array of field schema definitions.
- * @returns A Zod object schema.
+ * @returns A Zod object schema with conditional rules evaluated at refinement time.
  */
 export const generateZodSchema = (fields: FieldSchema[]) => {
     const shape: Record<string, z.ZodTypeAny> = {};
@@ -141,6 +140,7 @@ export const generateZodSchema = (fields: FieldSchema[]) => {
 
     fields.forEach((field) => {
         if (field.conditions && field.conditions.length > 0) {
+            // Conditional fields are validated in superRefine only when visible.
             shape[field.id] = z.unknown();
             conditionalFields.push(field);
         } else {
