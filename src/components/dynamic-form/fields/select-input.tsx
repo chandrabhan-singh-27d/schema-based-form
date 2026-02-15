@@ -33,6 +33,8 @@ export const SelectInput = <T extends FieldValues>({ field, register, error }: S
                 {...register(field.id as Path<T>, registerOptions)}
                 aria-invalid={!!error}
                 aria-describedby={error ? `${field.id}-error` : undefined}
+                suppressHydrationWarning
+                autoComplete="off"
                 style={{ color: '#111827', WebkitTextFillColor: '#111827' }}
                 className={cn(
                     "flex h-11 w-full rounded-md border bg-white px-3 py-2 text-base sm:text-sm text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50",

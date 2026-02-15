@@ -156,6 +156,8 @@ export default function Home() {
             <select
               id="formSelector"
               value={selectedSchemaId}
+              suppressHydrationWarning
+              autoComplete="off"
               onChange={(event) => {
                 setSelectedSchemaId(event.target.value);
               }}
