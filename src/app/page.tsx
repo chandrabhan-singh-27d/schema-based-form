@@ -1,65 +1,156 @@
-import Image from "next/image";
+"use client";
+
+import { DynamicForm } from "@/components/dynamic-form";
+import { FormSchema } from "@/lib/schema-types";
+import { useState } from "react";
+import { FieldValues } from "react-hook-form";
+
+const SAMPLE_SCHEMA: FormSchema = {
+  id: "user-registration",
+  title: "User Registration",
+  description: "Please fill out the form below to create an account. Fields marked with * are required.",
+  fields: [
+    {
+      id: "fullName",
+      type: "text",
+      label: "Full Name",
+      placeholder: "John Doe",
+      validation: {
+        required: true,
+        minLength: 2,
+        message: "Full name is required and must be at least 2 characters",
+      },
+    },
+    {
+      id: "email",
+      type: "email",
+      label: "Email Address",
+      placeholder: "john@example.com",
+      validation: {
+        required: true,
+        pattern: "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
+        message: "Please enter a valid email address",
+      },
+    },
+    {
+      id: "password",
+      type: "password",
+      label: "Password",
+      placeholder: "********",
+      validation: {
+        required: true,
+        minLength: 8,
+        message: "Password must be at least 8 characters",
+      },
+    },
+    {
+      id: "role",
+      type: "select",
+      label: "Role",
+      placeholder: "Select a role",
+      options: [
+        { label: "User", value: "user" },
+        { label: "Admin", value: "admin" },
+        { label: "Developer", value: "developer" },
+      ],
+      validation: {
+        required: true,
+      },
+    },
+    {
+      id: "githubUrl",
+      type: "text",
+      label: "GitHub Profile URL",
+      placeholder: "https://github.com/...",
+      conditions: [
+        {
+          field: "role",
+          operator: "eq",
+          value: "developer",
+        },
+      ],
+      validation: {
+        pattern: "^https:\\/\\/github\\.com\\/.*$",
+        message: "Must be a valid GitHub URL"
+      }
+    },
+    {
+      id: "adminCode",
+      type: "text",
+      label: "Admin Access Code",
+      placeholder: "Enter admin code",
+      conditions: [
+        {
+          field: "role",
+          operator: "eq",
+          value: "admin",
+        },
+      ],
+      validation: {
+        required: true,
+      },
+    },
+    {
+      id: "newsletter",
+      type: "checkbox",
+      label: "Subscribe to newsletter",
+      description: "Receive updates about our products.",
+    },
+    {
+      id: "newsletterFrequency",
+      type: "radio",
+      label: "Newsletter Frequency",
+      options: [
+        { label: "Weekly", value: "weekly" },
+        { label: "Monthly", value: "monthly" },
+      ],
+      conditions: [
+        {
+          field: "newsletter",
+          operator: "eq",
+          value: true,
+        },
+      ],
+      validation: {
+        required: true
+      }
+    },
+    {
+      id: "bio",
+      type: "textarea",
+      label: "Bio",
+      placeholder: "Tell us a bit about yourself",
+      validation: {
+        maxLength: 200,
+      }
+    }
+  ],
+};
 
 export default function Home() {
+  const [formData, setFormData] = useState<FieldValues | null>(null);
+
+  const handleSubmit = (data: FieldValues) => {
+    console.log("Form Submitted:", data);
+    setFormData(data);
+    alert(JSON.stringify(data, null, 2));
+  };
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <main className="flex min-h-screen flex-col items-center justify-between p-24 bg-gray-50">
+      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
+        <div className="w-full">
+          <h1 className="text-4xl font-bold text-center mb-8 text-gray-800">Dynamic Form Renderer</h1>
+          <DynamicForm schema={SAMPLE_SCHEMA} onSubmit={handleSubmit} />
+
+          {formData && (
+            <div className="mt-8 p-4 bg-gray-100 rounded-md max-w-2xl mx-auto">
+              <h3 className="text-lg font-bold mb-2">Submitted Data:</h3>
+              <pre className="whitespace-pre-wrap">{JSON.stringify(formData, null, 2)}</pre>
+            </div>
+          )}
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+      </div>
+    </main>
   );
 }
