@@ -2,11 +2,12 @@
 
 import { DynamicForm } from "@/components/dynamic-form";
 import { formSchemas } from "@/form-schemas";
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { FieldError, FieldErrors, FieldValues } from "react-hook-form";
 import { Toaster, toast } from "sonner";
 
 const SESSION_STORAGE_KEY = "dynamic-form:submissions";
+const SESSION_SUBMISSIONS_UPDATED_EVENT = "session-submissions-updated";
 
 /**
  * Persisted payload shape stored in sessionStorage for each successful submission.
@@ -34,10 +35,37 @@ const readSessionSubmissions = (): StoredSubmission[] => {
   }
 };
 
+/**
+ * Subscribes to session submission updates for hydration-safe UI rendering.
+ */
+const subscribeToSessionSubmissionCount = (onStoreChange: () => void): (() => void) => {
+  if (typeof window === "undefined") {
+    return () => {};
+  }
+
+  const handleChange = () => onStoreChange();
+  window.addEventListener("storage", handleChange);
+  window.addEventListener(SESSION_SUBMISSIONS_UPDATED_EVENT, handleChange);
+
+  return () => {
+    window.removeEventListener("storage", handleChange);
+    window.removeEventListener(SESSION_SUBMISSIONS_UPDATED_EVENT, handleChange);
+  };
+};
+
+/**
+ * Reads the current number of responses from session storage.
+ */
+const getSessionSubmissionCount = (): number => readSessionSubmissions().length;
+
 export default function Home() {
   const defaultSchemaId = formSchemas[0]?.id ?? "";
   const [selectedSchemaId, setSelectedSchemaId] = useState(defaultSchemaId);
-  const [sessionSubmissionCount, setSessionSubmissionCount] = useState(() => readSessionSubmissions().length);
+  const sessionSubmissionCount = useSyncExternalStore(
+    subscribeToSessionSubmissionCount,
+    getSessionSubmissionCount,
+    () => 0
+  );
   const activeSchema = formSchemas.find((schema) => schema.id === selectedSchemaId);
 
   /**
@@ -58,7 +86,7 @@ export default function Home() {
     try {
       const nextSubmissions = [submission, ...readSessionSubmissions()].slice(0, 30);
       window.sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(nextSubmissions));
-      setSessionSubmissionCount(nextSubmissions.length);
+      window.dispatchEvent(new Event(SESSION_SUBMISSIONS_UPDATED_EVENT));
       toast.success("Submitted successfully", {
         description: activeSchema.successMessage ?? "Response saved in this session.",
       });
