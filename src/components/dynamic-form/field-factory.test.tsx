@@ -12,7 +12,7 @@ const createForm = (watchValues: Record<string, unknown> = {}, errors: Record<st
         ref: vi.fn(),
     })),
     formState: { errors },
-    watch: vi.fn((name: string) => watchValues[name]),
+    watch: vi.fn((name?: string) => (name ? watchValues[name] : watchValues)),
 }) as unknown as UseFormReturn<FieldValues>;
 
 describe('FieldFactory', () => {
@@ -53,5 +53,27 @@ describe('FieldFactory', () => {
         render(<FieldFactory field={field} form={createForm({ role: 'admin' })} />);
 
         expect(screen.getByLabelText('Admin Code')).toBeDefined();
+    });
+
+    it('supports nested rule groups for conditional visibility', () => {
+        const field: FieldSchema = {
+            id: 'priorityQueue',
+            type: 'text',
+            label: 'Priority Queue',
+            conditions: {
+                all: [
+                    { field: 'isLoggedIn', operator: 'eq', value: true },
+                    {
+                        any: [
+                            { field: 'role', operator: 'eq', value: 'admin' },
+                            { field: 'role', operator: 'eq', value: 'support' },
+                        ],
+                    },
+                ],
+            },
+        };
+
+        render(<FieldFactory field={field} form={createForm({ isLoggedIn: true, role: 'support' })} />);
+        expect(screen.getByLabelText('Priority Queue')).toBeDefined();
     });
 });

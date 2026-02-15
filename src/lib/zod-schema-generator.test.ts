@@ -105,6 +105,40 @@ describe('generateZodSchema', () => {
         expect(schema.safeParse({ level: 1 }).success).toBe(true);
     });
 
+    it('should support nested JSON rule groups for conditional fields', () => {
+        const fields: FieldSchema[] = [
+            {
+                id: 'role',
+                type: 'select',
+                label: 'Role',
+                options: [{ label: 'User', value: 'user' }, { label: 'Admin', value: 'admin' }],
+                validation: { required: true },
+            },
+            {
+                id: 'isLoggedIn',
+                type: 'checkbox',
+                label: 'Logged In',
+            },
+            {
+                id: 'adminNote',
+                type: 'text',
+                label: 'Admin Note',
+                conditions: {
+                    all: [
+                        { field: 'isLoggedIn', operator: 'eq', value: true },
+                        { field: 'role', operator: 'eq', value: 'admin' },
+                    ],
+                },
+                validation: { required: true },
+            },
+        ];
+        const schema = generateZodSchema(fields);
+
+        expect(schema.safeParse({ role: 'admin', isLoggedIn: true, adminNote: 'OK' }).success).toBe(true);
+        expect(schema.safeParse({ role: 'admin', isLoggedIn: true }).success).toBe(false);
+        expect(schema.safeParse({ role: 'user', isLoggedIn: true }).success).toBe(true);
+    });
+
     it('should enforce required checkbox as true', () => {
         const fields: FieldSchema[] = [
             {

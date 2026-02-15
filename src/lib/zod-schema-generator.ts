@@ -1,5 +1,6 @@
 import { z } from 'zod';
-import { FieldSchema, ConditionalRule } from './schema-types';
+import { FieldSchema } from './schema-types';
+import { evaluateFieldConditions } from './rule-evaluator';
 
 const STRING_FIELD_TYPES = new Set(['text', 'email', 'password', 'textarea']);
 const DEFAULT_REQUIRED_MESSAGE = 'Please fill out this field.';
@@ -103,33 +104,6 @@ const generateFieldSchema = (field: FieldSchema) => {
 };
 
 /**
- * Evaluates whether a field should be active for the current form data.
- * All conditions must pass for the field to be considered visible/required.
- */
-const evaluateConditions = (conditions: ConditionalRule[], data: Record<string, unknown>): boolean => {
-    return conditions.every((condition) => {
-        const dependentValue = data[condition.field];
-
-        switch (condition.operator) {
-            case 'eq':
-                return dependentValue === condition.value;
-            case 'neq':
-                return dependentValue !== condition.value;
-            case 'in':
-                return Array.isArray(condition.value)
-                    ? condition.value.some((value) => value === dependentValue)
-                    : false;
-            case 'nin':
-                return Array.isArray(condition.value)
-                    ? !condition.value.some((value) => value === dependentValue)
-                    : false;
-            default:
-                return true;
-        }
-    });
-};
-
-/**
  * Generates a form-level Zod schema from field definitions.
  * @param fields Array of field schema definitions.
  * @returns A Zod object schema with conditional rules evaluated at refinement time.
@@ -139,7 +113,7 @@ export const generateZodSchema = (fields: FieldSchema[]) => {
     const conditionalFields: FieldSchema[] = [];
 
     fields.forEach((field) => {
-        if (field.conditions && field.conditions.length > 0) {
+        if (field.conditions) {
             // Conditional fields are validated in superRefine only when visible.
             shape[field.id] = z.unknown();
             conditionalFields.push(field);
@@ -155,7 +129,7 @@ export const generateZodSchema = (fields: FieldSchema[]) => {
             const formData = data as Record<string, unknown>;
 
             conditionalFields.forEach((field) => {
-                const shouldShow = evaluateConditions(field.conditions!, formData);
+                const shouldShow = evaluateFieldConditions(field.conditions, formData);
 
                 if (shouldShow) {
                     const fieldSchema = generateFieldSchema(field);

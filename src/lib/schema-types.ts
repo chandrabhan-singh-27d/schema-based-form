@@ -27,6 +27,15 @@ export interface ConditionalRule {
     value: string | number | boolean | (string | number)[];
 }
 
+export interface RuleGroup {
+    all?: RuleNode[];
+    any?: RuleNode[];
+    not?: RuleNode;
+}
+
+export type RuleNode = ConditionalRule | RuleGroup;
+export type FieldConditions = ConditionalRule[] | RuleNode;
+
 export interface Option {
     label: string;
     value: string | number;
@@ -40,7 +49,7 @@ export interface FieldSchema {
     defaultValue?: unknown;
     options?: Option[]; // Allowed options for select/radio fields.
     validation?: ValidationRule;
-    conditions?: ConditionalRule[];
+    conditions?: FieldConditions;
     description?: string;
     className?: string; // Optional per-field style override.
 }

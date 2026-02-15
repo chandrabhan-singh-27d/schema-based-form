@@ -1,11 +1,12 @@
 import React from 'react';
-import { UseFormReturn, FieldValues, FieldError, Path } from 'react-hook-form';
+import { UseFormReturn, FieldValues, FieldError } from 'react-hook-form';
 import { FieldSchema } from '@/lib/schema-types';
 import { TextInput } from './fields/text-input';
 import { SelectInput } from './fields/select-input';
 import { CheckboxInput } from './fields/checkbox-input';
 import { RadioGroupInput } from './fields/radio-group-input';
 import { TextareaInput } from './fields/textarea-input';
+import { evaluateFieldConditions } from '@/lib/rule-evaluator';
 
 interface FieldFactoryProps<T extends FieldValues> {
     field: FieldSchema;
@@ -17,23 +18,9 @@ export const FieldFactory = <T extends FieldValues>({ field, form }: FieldFactor
     const error = errors[field.id];
 
     // Hide fields until all configured display conditions evaluate to true.
-    if (field.conditions && field.conditions.length > 0) {
-        const shouldShow = field.conditions.every((condition) => {
-            const dependentValue = watch(condition.field as Path<T>);
-
-            switch (condition.operator) {
-                case 'eq':
-                    return dependentValue === condition.value;
-                case 'neq':
-                    return dependentValue !== condition.value;
-                case 'in':
-                    return Array.isArray(condition.value) && condition.value.includes(dependentValue);
-                case 'nin':
-                    return Array.isArray(condition.value) && !condition.value.includes(dependentValue);
-                default:
-                    return true;
-            }
-        });
+    if (field.conditions) {
+        const formData = watch() as Record<string, unknown>;
+        const shouldShow = evaluateFieldConditions(field.conditions, formData);
 
         if (!shouldShow) return null;
     }
