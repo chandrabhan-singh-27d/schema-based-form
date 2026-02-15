@@ -2,71 +2,28 @@
 
 import { DynamicForm } from "@/components/dynamic-form";
 import { formSchemas } from "@/form-schemas";
-import { useState, useSyncExternalStore } from "react";
-import { FieldError, FieldErrors, FieldValues } from "react-hook-form";
-import { Toaster, toast } from "sonner";
-
-const SESSION_STORAGE_KEY = "dynamic-form:submissions";
-const SESSION_SUBMISSIONS_UPDATED_EVENT = "session-submissions-updated";
-
-/**
- * Persisted payload shape stored in sessionStorage for each successful submission.
- */
-type StoredSubmission = {
-  schemaId: string;
-  schemaTitle: string;
-  submittedAt: string;
-  data: FieldValues;
-};
-
-/**
- * Reads and deserializes all form submissions stored for the current browser session.
- */
-const readSessionSubmissions = (): StoredSubmission[] => {
-  if (typeof window === "undefined") {
-    return [];
-  }
-
-  try {
-    const rawSubmissions = window.sessionStorage.getItem(SESSION_STORAGE_KEY);
-    return rawSubmissions ? (JSON.parse(rawSubmissions) as StoredSubmission[]) : [];
-  } catch {
-    return [];
-  }
-};
-
-/**
- * Subscribes to session submission updates for hydration-safe UI rendering.
- */
-const subscribeToSessionSubmissionCount = (onStoreChange: () => void): (() => void) => {
-  if (typeof window === "undefined") {
-    return () => {};
-  }
-
-  const handleChange = () => onStoreChange();
-  window.addEventListener("storage", handleChange);
-  window.addEventListener(SESSION_SUBMISSIONS_UPDATED_EVENT, handleChange);
-
-  return () => {
-    window.removeEventListener("storage", handleChange);
-    window.removeEventListener(SESSION_SUBMISSIONS_UPDATED_EVENT, handleChange);
-  };
-};
-
-/**
- * Reads the current number of responses from session storage.
- */
-const getSessionSubmissionCount = (): number => readSessionSubmissions().length;
+import { useMemo, useState } from "react";
+import { FieldErrors, FieldValues } from "react-hook-form";
+import { Toaster } from "sonner";
+import { getFirstErrorMessage } from "@/features/forms/application/use-cases/get-first-error-message";
+import { createSubmitFormUseCase } from "@/features/forms/application/use-cases/submit-form";
+import { sessionSubmissionRepository } from "@/features/forms/infrastructure/persistence/session-submission-repository";
+import { sonnerNotifier } from "@/features/forms/infrastructure/notifications/sonner-notifier";
+import { useSessionSubmissionCount } from "@/features/forms/presentation/hooks/use-session-submission-count";
 
 export default function Home() {
   const defaultSchemaId = formSchemas[0]?.id ?? "";
   const [selectedSchemaId, setSelectedSchemaId] = useState(defaultSchemaId);
-  const sessionSubmissionCount = useSyncExternalStore(
-    subscribeToSessionSubmissionCount,
-    getSessionSubmissionCount,
-    () => 0
-  );
+  const sessionSubmissionCount = useSessionSubmissionCount(sessionSubmissionRepository);
   const activeSchema = formSchemas.find((schema) => schema.id === selectedSchemaId);
+  const submitForm = useMemo(
+    () =>
+      createSubmitFormUseCase({
+        repository: sessionSubmissionRepository,
+        notifier: sonnerNotifier,
+      }),
+    []
+  );
 
   /**
    * Persists a valid submission and shows user-facing feedback.
@@ -75,50 +32,8 @@ export default function Home() {
     if (!activeSchema) {
       return;
     }
-
-    const submission: StoredSubmission = {
-      schemaId: activeSchema.id,
-      schemaTitle: activeSchema.title,
-      submittedAt: new Date().toISOString(),
-      data,
-    };
-
-    try {
-      const nextSubmissions = [submission, ...readSessionSubmissions()].slice(0, 30);
-      window.sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(nextSubmissions));
-      window.dispatchEvent(new Event(SESSION_SUBMISSIONS_UPDATED_EVENT));
-      toast.success("Submitted successfully", {
-        description: activeSchema.successMessage ?? "Response saved in this session.",
-      });
-    } catch {
-      toast.error("Couldn't save your response", {
-        description: "Your submission went through, but we couldn't save it in this browser session.",
-      });
-    }
-
+    submitForm(activeSchema, data);
     console.log("Form Submitted:", data);
-  };
-
-  /**
-   * Walks nested React Hook Form error objects and returns the first user message found.
-   */
-  const getFirstErrorMessage = (errors: FieldErrors<FieldValues>): string | undefined => {
-    const queue = Object.values(errors) as Array<FieldError | FieldErrors<FieldValues> | undefined>;
-
-    while (queue.length > 0) {
-      const entry = queue.shift();
-      if (!entry) continue;
-
-      if ("message" in entry && typeof entry.message === "string") {
-        return entry.message;
-      }
-
-      if (typeof entry === "object") {
-        queue.push(...(Object.values(entry) as Array<FieldError | FieldErrors<FieldValues> | undefined>));
-      }
-    }
-
-    return undefined;
   };
 
   /**
@@ -126,9 +41,7 @@ export default function Home() {
    */
   const handleInvalidSubmit = (errors: FieldErrors<FieldValues>) => {
     const firstError = getFirstErrorMessage(errors);
-    toast.error("Please check the highlighted fields", {
-      description: firstError ?? "Validation failed. Check the inline error messages.",
-    });
+    sonnerNotifier.error("Please check the highlighted fields", firstError ?? "Validation failed. Check the inline error messages.");
   };
 
   if (!activeSchema) {

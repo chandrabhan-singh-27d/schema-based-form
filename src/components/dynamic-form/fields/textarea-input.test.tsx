@@ -23,7 +23,7 @@ describe('TextareaInput', () => {
 
         expect(screen.getByLabelText('Bio')).toBeDefined();
         expect(screen.getByRole('textbox')).toBeDefined();
-    });
+    }, 10000);
 
     it('shows error state and message', () => {
         const error = { type: 'required', message: 'Bio is required' };

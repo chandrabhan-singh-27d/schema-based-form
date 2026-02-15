@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { useForm, FieldValues, FieldErrors } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { FormSchema } from '@/lib/schema-types';
-import { generateZodSchema } from '@/lib/zod-schema-generator';
+import { buildZodSchema } from '@/features/forms/application/services/build-zod-schema';
 import { FieldFactory } from './field-factory';
 import { cn } from '@/lib/utils';
 
@@ -18,7 +18,7 @@ interface DynamicFormProps {
  * Renders a form from schema metadata and validates it with a generated Zod schema.
  */
 export const DynamicForm: React.FC<DynamicFormProps> = ({ schema, onSubmit, onInvalid, className, defaultValues }) => {
-    const zodSchema = useMemo(() => generateZodSchema(schema.fields), [schema.fields]);
+    const zodSchema = useMemo(() => buildZodSchema(schema.fields), [schema.fields]);
 
     const form = useForm({
         resolver: zodResolver(zodSchema),

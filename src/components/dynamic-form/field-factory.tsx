@@ -6,7 +6,7 @@ import { SelectInput } from './fields/select-input';
 import { CheckboxInput } from './fields/checkbox-input';
 import { RadioGroupInput } from './fields/radio-group-input';
 import { TextareaInput } from './fields/textarea-input';
-import { evaluateFieldConditions } from '@/lib/rule-evaluator';
+import { evaluateFieldConditions } from '@/features/forms/domain/rules/evaluate-field-conditions';
 
 interface FieldFactoryProps<T extends FieldValues> {
     field: FieldSchema;

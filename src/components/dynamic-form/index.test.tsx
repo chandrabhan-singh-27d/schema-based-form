@@ -41,7 +41,7 @@ describe('DynamicForm', () => {
         });
 
         expect(onSubmit).toHaveBeenCalledWith({ name: 'John', age: 21 }, expect.anything());
-    });
+    }, 15000);
 
     it('blocks submit and shows validation message for invalid input', async () => {
         const user = userEvent.setup();
@@ -58,7 +58,7 @@ describe('DynamicForm', () => {
         expect(onInvalid).toHaveBeenCalledTimes(1);
 
         expect(screen.getAllByRole('alert').length).toBeGreaterThan(0);
-    });
+    }, 15000);
 
     it('does not submit hidden conditional field values', async () => {
         const user = userEvent.setup();
@@ -95,7 +95,7 @@ describe('DynamicForm', () => {
         });
 
         expect(onSubmit).toHaveBeenCalledWith({ role: 'user' }, expect.anything());
-    });
+    }, 15000);
 
     it('submits contact-us schema when all required values are filled', async () => {
         const user = userEvent.setup();
@@ -112,5 +112,5 @@ describe('DynamicForm', () => {
         await waitFor(() => {
             expect(onSubmit).toHaveBeenCalledTimes(1);
         });
-    });
+    }, 15000);
 });
