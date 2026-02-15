@@ -1,36 +1,132 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Schema-Based Dynamic Form Renderer
+
+A powerful, type-safe dynamic form generator for Next.js applications related. Built with React Hook Form, Zod, and Tailwind CSS, this project allows you to define complex forms entirely via JSON/TypeScript schemas.
+
+## Key Features
+
+- **Schema-Driven**: Define your entire form structure, validation, and layout in a single configuration object.
+- **Type-Safe**: Full TypeScript support for schemas ensuring robustness and autocomplete.
+- **Zod Integration**: seamless validation using Zod schemas automatically generated from your form definition.
+- **Conditional Logic**: Show or hide fields dynamically based on the values of other fields (e.g., show "GitHub URL" only if role is "Developer").
+- **Performance Optimized**: Uses `react-hook-form` for minimizing re-renders and optimal performance.
+- **Customizable UI**: Styled with Tailwind CSS for easy theming and layout adjustments.
+
+## Tech Stack
+
+- **Framework**: Next.js 14 (App Router)
+- **Language**: TypeScript
+- **Form Handling**: React Hook Form
+- **Validation**: Zod & @hookform/resolvers
+- **Styling**: Tailwind CSS
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 18.17 or later
+
+### Installation
+
+1.  Clone the repository:
+    ```bash
+    git clone https://github.com/your-username/schema-based-form.git
+    cd schema-based-form
+    ```
+
+2.  Install dependencies:
+    ```bash
+    npm install
+    # or
+    yarn install
+    # or
+    pnpm install
+    ```
+
+### Running the Project
+
+Start the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the example form.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Usage
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 1. Define Your Schema
 
-## Learn More
+Define your form structure using the `FormSchema` type.
 
-To learn more about Next.js, take a look at the following resources:
+```typescript
+import { FormSchema } from "@/lib/schema-types";
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+const myFormSchema: FormSchema = {
+  id: "contact-form",
+  title: "Contact Us",
+  fields: [
+    {
+      id: "name",
+      type: "text",
+      label: "Your Name",
+      placeholder: "John Doe",
+      validation: { required: true, minLength: 2 }
+    },
+    {
+      id: "email",
+      type: "email",
+      label: "Email Address",
+      validation: { required: true, pattern: "^\\S+@\\S+\\.\\S+$" }
+    },
+    {
+      id: "message",
+      type: "textarea",
+      label: "Message",
+      validation: { required: true, maxLength: 500 }
+    }
+  ]
+};
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 2. Render the Form
 
-## Deploy on Vercel
+Import and usage the `DynamicForm` component in your page or component.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```typescript
+import { DynamicForm } from "@/components/dynamic-form";
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+export default function ContactPage() {
+  const handleSubmit = (data) => {
+    console.log("Form Submitted:", data);
+  };
+
+  return (
+    <div className="container mx-auto p-4">
+      <DynamicForm schema={myFormSchema} onSubmit={handleSubmit} />
+    </div>
+  );
+}
+```
+
+## Project Structure
+
+- `src/components/dynamic-form`: Contains the core logic for the form renderer.
+  - `field-factory.tsx`: Dispatches the correct component based on field type.
+  - `fields/`: Individual field components (Input, Select, Checkbox, etc.).
+- `src/lib/schema-types.ts`: TypeScript definitions for the schema structure.
+- `src/lib/zod-schema-generator.ts`: Logic to convert the JSON schema into a Zod validation schema.
+
+## Supported Field Types
+
+- `text`
+- `email`
+- `password`
+- `number`
+- `textarea`
+- `select`
+- `checkbox`
+- `radio`
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
