@@ -12,6 +12,9 @@ interface FormFieldWrapperProps {
     id: string;
 }
 
+/**
+ * Shared wrapper that renders label, helper text, and inline validation state.
+ */
 export const FormFieldWrapper: React.FC<FormFieldWrapperProps> = ({
     label,
     error,

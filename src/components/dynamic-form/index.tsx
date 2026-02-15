@@ -14,6 +14,9 @@ interface DynamicFormProps {
     defaultValues?: FieldValues;
 }
 
+/**
+ * Renders a form from schema metadata and validates it with a generated Zod schema.
+ */
 export const DynamicForm: React.FC<DynamicFormProps> = ({ schema, onSubmit, onInvalid, className, defaultValues }) => {
     const zodSchema = useMemo(() => generateZodSchema(schema.fields), [schema.fields]);
 

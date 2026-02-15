@@ -8,6 +8,9 @@ import { Toaster, toast } from "sonner";
 
 const SESSION_STORAGE_KEY = "dynamic-form:submissions";
 
+/**
+ * Persisted payload shape stored in sessionStorage for each successful submission.
+ */
 type StoredSubmission = {
   schemaId: string;
   schemaTitle: string;
@@ -15,24 +18,31 @@ type StoredSubmission = {
   data: FieldValues;
 };
 
+/**
+ * Reads and deserializes all form submissions stored for the current browser session.
+ */
+const readSessionSubmissions = (): StoredSubmission[] => {
+  if (typeof window === "undefined") {
+    return [];
+  }
+
+  try {
+    const rawSubmissions = window.sessionStorage.getItem(SESSION_STORAGE_KEY);
+    return rawSubmissions ? (JSON.parse(rawSubmissions) as StoredSubmission[]) : [];
+  } catch {
+    return [];
+  }
+};
+
 export default function Home() {
   const defaultSchemaId = formSchemas[0]?.id ?? "";
   const [selectedSchemaId, setSelectedSchemaId] = useState(defaultSchemaId);
-  const [sessionSubmissionCount, setSessionSubmissionCount] = useState(() => {
-    if (typeof window === "undefined") {
-      return 0;
-    }
-
-    try {
-      const rawSubmissions = window.sessionStorage.getItem(SESSION_STORAGE_KEY);
-      const parsedSubmissions = rawSubmissions ? (JSON.parse(rawSubmissions) as StoredSubmission[]) : [];
-      return parsedSubmissions.length;
-    } catch {
-      return 0;
-    }
-  });
+  const [sessionSubmissionCount, setSessionSubmissionCount] = useState(() => readSessionSubmissions().length);
   const activeSchema = formSchemas.find((schema) => schema.id === selectedSchemaId);
 
+  /**
+   * Persists a valid submission and shows user-facing feedback.
+   */
   const handleSubmit = (data: FieldValues) => {
     if (!activeSchema) {
       return;
@@ -46,9 +56,7 @@ export default function Home() {
     };
 
     try {
-      const rawSubmissions = window.sessionStorage.getItem(SESSION_STORAGE_KEY);
-      const parsedSubmissions = rawSubmissions ? (JSON.parse(rawSubmissions) as StoredSubmission[]) : [];
-      const nextSubmissions = [submission, ...parsedSubmissions].slice(0, 30);
+      const nextSubmissions = [submission, ...readSessionSubmissions()].slice(0, 30);
       window.sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(nextSubmissions));
       setSessionSubmissionCount(nextSubmissions.length);
       toast.success("Submitted successfully", {
@@ -63,6 +71,9 @@ export default function Home() {
     console.log("Form Submitted:", data);
   };
 
+  /**
+   * Walks nested React Hook Form error objects and returns the first user message found.
+   */
   const getFirstErrorMessage = (errors: FieldErrors<FieldValues>): string | undefined => {
     const queue = Object.values(errors) as Array<FieldError | FieldErrors<FieldValues> | undefined>;
 
@@ -82,6 +93,9 @@ export default function Home() {
     return undefined;
   };
 
+  /**
+   * Displays a concise global error toast while inline field errors remain visible.
+   */
   const handleInvalidSubmit = (errors: FieldErrors<FieldValues>) => {
     const firstError = getFirstErrorMessage(errors);
     toast.error("Please check the highlighted fields", {
