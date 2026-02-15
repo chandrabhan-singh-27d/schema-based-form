@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { evaluateFieldConditions } from './rule-evaluator';
-import { FieldConditions } from './schema-types';
+import { evaluateFieldConditions } from '@lib/rule-evaluator';
+import { FieldConditions } from '@lib/schema-types';
 
 describe('evaluateFieldConditions', () => {
     it('evaluates legacy array conditions as implicit AND', () => {

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { FieldFactory } from './field-factory';
+import { FieldFactory } from '@components/dynamic-form/field-factory';
 import { FieldSchema } from '@lib/schema-types';
 import { UseFormReturn, FieldValues } from 'react-hook-form';
 

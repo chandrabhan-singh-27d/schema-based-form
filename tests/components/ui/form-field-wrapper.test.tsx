@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { FormFieldWrapper } from './form-field-wrapper';
+import { FormFieldWrapper } from '@components/ui/form-field-wrapper';
 import { FieldError } from 'react-hook-form';
 
 describe('FormFieldWrapper', () => {

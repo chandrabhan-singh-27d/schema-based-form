@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { TextInput } from './text-input';
+import { TextInput } from '@components/dynamic-form/fields/text-input';
 import { FieldSchema } from '@lib/schema-types';
 
 describe('TextInput', () => {

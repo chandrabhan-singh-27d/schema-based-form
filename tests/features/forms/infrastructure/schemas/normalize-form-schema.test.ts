@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { normalizeFormSchema } from './normalize-form-schema';
+import { normalizeFormSchema } from '@forms/infrastructure/schemas/normalize-form-schema';
 
 describe('normalizeFormSchema', () => {
     it('parses valid form schema objects', () => {

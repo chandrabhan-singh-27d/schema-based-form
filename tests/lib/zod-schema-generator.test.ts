@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { generateZodSchema } from './zod-schema-generator';
-import { FieldSchema } from './schema-types';
+import { generateZodSchema } from '@lib/zod-schema-generator';
+import { FieldSchema } from '@lib/schema-types';
 
 describe('generateZodSchema', () => {
     it('should generate a simple schema for text field', () => {

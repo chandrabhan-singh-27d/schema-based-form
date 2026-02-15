@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { DynamicForm } from './index';
+import { DynamicForm } from '@components/dynamic-form';
 import { FormSchema } from '@lib/schema-types';
 import contactUsSchema from '@schemas/contact-us.json';
 

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { generateZodSchema } from '@lib/zod-schema-generator';
-import { formSchemas } from './index';
+import { formSchemas } from '@schemas/index';
 
 describe('formSchemas', () => {
     it('exports at least one schema', () => {

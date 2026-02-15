@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { createSubmitFormUseCase } from './submit-form';
+import { createSubmitFormUseCase } from '@forms/application/use-cases/submit-form';
 import { SubmissionRepository } from '@forms/application/ports/submission-repository';
 import { Notifier } from '@forms/application/ports/notifier';
 import { FormSchema } from '@forms/domain/types';
