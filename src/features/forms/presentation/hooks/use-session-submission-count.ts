@@ -1,13 +1,29 @@
-import { useSyncExternalStore } from 'react';
+import { useEffect, useState } from 'react';
 import { SubmissionRepository } from '@forms/application/ports/submission-repository';
 
 /**
- * Hydration-safe subscription to live session submission count.
+ * Fetches submission count from any async repository implementation.
  */
 export const useSessionSubmissionCount = (repository: SubmissionRepository) => {
-    return useSyncExternalStore(
-        repository.subscribe,
-        repository.count,
-        () => 0
-    );
+    const [count, setCount] = useState(0);
+
+    useEffect(() => {
+        let isMounted = true;
+
+        repository.count()
+            .then((value) => {
+                if (isMounted) {
+                    setCount(value);
+                }
+            })
+            .catch(() => {
+                // Keep default count on failure.
+            });
+
+        return () => {
+            isMounted = false;
+        };
+    }, [repository]);
+
+    return count;
 };

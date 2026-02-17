@@ -12,12 +12,11 @@ describe('createSubmitFormUseCase', () => {
         fields: [],
     };
 
-    it('saves data and emits success notification', () => {
+    it('saves data and emits success notification', async () => {
         const repository: SubmissionRepository = {
-            list: vi.fn().mockReturnValue([]),
-            save: vi.fn().mockReturnValue([]),
-            count: vi.fn().mockReturnValue(0),
-            subscribe: vi.fn().mockReturnValue(() => {}),
+            list: vi.fn().mockResolvedValue([]),
+            save: vi.fn().mockResolvedValue([]),
+            count: vi.fn().mockResolvedValue(0),
         };
         const notifier: Notifier = {
             success: vi.fn(),
@@ -25,21 +24,18 @@ describe('createSubmitFormUseCase', () => {
         };
 
         const submitForm = createSubmitFormUseCase({ repository, notifier });
-        submitForm(schema, { email: 'a@b.com' });
+        await submitForm(schema, { email: 'a@b.com' });
 
         expect(repository.save).toHaveBeenCalledTimes(1);
         expect(notifier.success).toHaveBeenCalledWith('Submitted successfully', schema.successMessage);
         expect(notifier.error).not.toHaveBeenCalled();
     });
 
-    it('emits error notification when repository save fails', () => {
+    it('emits error notification when repository save fails', async () => {
         const repository: SubmissionRepository = {
-            list: vi.fn().mockReturnValue([]),
-            save: vi.fn(() => {
-                throw new Error('boom');
-            }),
-            count: vi.fn().mockReturnValue(0),
-            subscribe: vi.fn().mockReturnValue(() => {}),
+            list: vi.fn().mockResolvedValue([]),
+            save: vi.fn().mockRejectedValue(new Error('boom')),
+            count: vi.fn().mockResolvedValue(0),
         };
         const notifier: Notifier = {
             success: vi.fn(),
@@ -47,7 +43,7 @@ describe('createSubmitFormUseCase', () => {
         };
 
         const submitForm = createSubmitFormUseCase({ repository, notifier });
-        submitForm(schema, { email: 'a@b.com' });
+        await expect(submitForm(schema, { email: 'a@b.com' })).rejects.toThrow('Submission persistence failed.');
 
         expect(notifier.error).toHaveBeenCalledTimes(1);
     });

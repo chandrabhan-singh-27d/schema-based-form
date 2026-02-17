@@ -30,25 +30,11 @@ const write = (submissions: SubmissionRecord[]) => {
 };
 
 export const sessionSubmissionRepository: SubmissionRepository = {
-    list: () => read(),
-    save: (submission) => {
+    list: async () => read(),
+    save: async (submission) => {
         const nextSubmissions = [submission, ...read()].slice(0, MAX_SESSION_SUBMISSIONS);
         write(nextSubmissions);
         return nextSubmissions;
     },
-    count: () => read().length,
-    subscribe: (onChange) => {
-        if (!canUseWindow()) {
-            return () => {};
-        }
-
-        const handleChange = () => onChange();
-        window.addEventListener('storage', handleChange);
-        window.addEventListener(SESSION_SUBMISSIONS_UPDATED_EVENT, handleChange);
-
-        return () => {
-            window.removeEventListener('storage', handleChange);
-            window.removeEventListener(SESSION_SUBMISSIONS_UPDATED_EVENT, handleChange);
-        };
-    },
+    count: async () => read().length,
 };

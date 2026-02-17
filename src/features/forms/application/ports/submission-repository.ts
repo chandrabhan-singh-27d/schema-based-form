@@ -1,8 +1,7 @@
 import { SubmissionRecord } from '@forms/domain/types';
 
 export interface SubmissionRepository {
-    list(): SubmissionRecord[];
-    save(submission: SubmissionRecord): SubmissionRecord[];
-    count(): number;
-    subscribe(onChange: () => void): () => void;
+    list(): Promise<SubmissionRecord[]>;
+    save(submission: SubmissionRecord): Promise<SubmissionRecord[]>;
+    count(): Promise<number>;
 }

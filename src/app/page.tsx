@@ -2,37 +2,50 @@
 
 import { DynamicForm } from "@components/dynamic-form";
 import { formSchemas } from "@schemas/index";
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { FieldErrors, FieldValues } from "react-hook-form";
 import { Toaster } from "sonner";
 import { getFirstErrorMessage } from "@forms/application/use-cases/get-first-error-message";
 import { createSubmitFormUseCase } from "@forms/application/use-cases/submit-form";
-import { sessionSubmissionRepository } from "@forms/infrastructure/persistence/session-submission-repository";
+import { postgresSubmissionRepository } from "@forms/infrastructure/persistence/postgres-submission-repository";
 import { sonnerNotifier } from "@forms/infrastructure/notifications/sonner-notifier";
-import { useSessionSubmissionCount } from "@forms/presentation/hooks/use-session-submission-count";
 
 export default function Home() {
   const defaultSchemaId = formSchemas[0]?.id ?? "";
   const [selectedSchemaId, setSelectedSchemaId] = useState(defaultSchemaId);
-  const sessionSubmissionCount = useSessionSubmissionCount(sessionSubmissionRepository);
+  const [submissionCount, setSubmissionCount] = useState(0);
   const activeSchema = formSchemas.find((schema) => schema.id === selectedSchemaId);
   const submitForm = useMemo(
     () =>
       createSubmitFormUseCase({
-        repository: sessionSubmissionRepository,
+        repository: postgresSubmissionRepository,
         notifier: sonnerNotifier,
       }),
     []
   );
 
+  const refreshSubmissionCount = useCallback(async () => {
+    try {
+      const count = await postgresSubmissionRepository.count();
+      setSubmissionCount(count);
+    } catch {
+      // Keep the existing count if API call fails.
+    }
+  }, []);
+
+  useEffect(() => {
+    void refreshSubmissionCount();
+  }, [refreshSubmissionCount]);
+
   /**
    * Persists a valid submission and shows user-facing feedback.
    */
-  const handleSubmit = (data: FieldValues) => {
+  const handleSubmit = async (data: FieldValues) => {
     if (!activeSchema) {
       return;
     }
-    submitForm(activeSchema, data);
+    await submitForm(activeSchema, data);
+    await refreshSubmissionCount();
     console.log("Form Submitted:", data);
   };
 
@@ -60,7 +73,7 @@ export default function Home() {
             Dynamic Form Renderer
           </h1>
           <div className="mb-4 text-sm text-gray-700">
-            Session responses: <span className="font-semibold">{sessionSubmissionCount}</span>
+            Saved responses: <span className="font-semibold">{submissionCount}</span>
           </div>
           <div className="w-full mb-4 sm:mb-6 rounded-lg bg-white p-4 sm:p-5 shadow-md">
             <label htmlFor="formSelector" className="block text-sm font-semibold mb-2 text-gray-700">

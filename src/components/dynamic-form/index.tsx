@@ -8,7 +8,7 @@ import { cn } from '@lib/utils';
 
 interface DynamicFormProps {
     schema: FormSchema;
-    onSubmit: (data: FieldValues) => void;
+    onSubmit: (data: FieldValues) => Promise<void> | void;
     onInvalid?: (errors: FieldErrors<FieldValues>) => void;
     className?: string;
     defaultValues?: FieldValues;
