@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Schema Based Form",
-  description: "A dynamic form renderer based on JSON schema",
+  title: "Chatbot Analytics Studio",
+  description: "Upload chatbot conversations from CSV or Excel, explore visual analysis, and ask questions about the results.",
 };
 
 export default function RootLayout({
